@@ -32,7 +32,12 @@ function mockNavigatorLanguages(languages: string[]) {
   })
 }
 
-afterEach(() => {
+/**
+ * 恢复测试前的浏览器语言环境，避免当前用例污染后续断言。
+ *
+ * @returns {void}
+ */
+function restoreNavigatorLanguages() {
   Object.defineProperty(window.navigator, 'language', {
     configurable: true,
     value: originalLanguage,
@@ -42,7 +47,9 @@ afterEach(() => {
     configurable: true,
     value: originalLanguages,
   })
-})
+}
+
+afterEach(restoreNavigatorLanguages)
 
 describe('useLoginI18n', () => {
   it('优先使用 localStorage.lang 中的语言配置', () => {

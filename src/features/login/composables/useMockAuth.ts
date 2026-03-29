@@ -1,3 +1,7 @@
+/**
+ * 登录页 mock 认证入口。
+ * 这里保留与真实接口相同的调用边界，便于后续替换成网络请求而不影响页面层。
+ */
 import type { LoginPayload, MockAuthResult } from '@/features/login/types'
 
 /**
@@ -42,7 +46,8 @@ export function useMockAuth() {
    * `payload.email` 应传入邮箱字符串，`payload.password` 应传入密码明文，
    * `payload.remember` 表示是否保持登录。
    * @returns {Promise<MockAuthResult>} 成功时返回跳转路径和提示文案。
-   * 当邮箱为 `fail@career.local` 或密码长度小于 6 时会抛出错误码。
+   * @throws {Error} 当邮箱为 `fail@career.local` 时抛出 `AUTH_INVALID_CREDENTIALS`。
+   * @throws {Error} 当密码长度小于 6 时抛出 `AUTH_PASSWORD_TOO_SHORT`。
    *
    * @example
    * await login({

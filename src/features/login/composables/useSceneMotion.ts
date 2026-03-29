@@ -1,3 +1,8 @@
+/**
+ * 实验版角色动画引擎。
+ * 这套实现基于场景快照、pointer 和 RAF 生成动作，目前主要作为后续抽离动画层的参考保留。
+ * 当前页面真实使用的仍是 `CharacterScene.vue`。
+ */
 import {
   useDocumentVisibility,
   useElementBounding,

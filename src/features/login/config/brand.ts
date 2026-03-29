@@ -1,7 +1,15 @@
+/**
+ * 登录页品牌配置入口。
+ * 负责输出默认品牌数据，并把 logo 的尺寸与容器样式映射成组件可消费的 CSS 变量。
+ * 所有默认链接都会基于 `import.meta.env.BASE_URL` 生成，便于部署到 GitHub Pages 子路径。
+ */
 import logoMark from '@/assets/logo-mark.svg'
 import type { BrandConfig, BrandLogoConfig } from '@/features/login/types'
 
-/** 当前应用部署基路径。GitHub Pages 项目页下会自动变成 `/<repo>/`。 */
+/**
+ * 当前应用部署基路径。
+ * 开发环境通常是 `/`，GitHub Pages 项目页下会自动变成 `/<repo>/`。
+ */
 const appBasePath = import.meta.env.BASE_URL
 
 /**

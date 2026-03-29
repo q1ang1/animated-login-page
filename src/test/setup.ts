@@ -1,9 +1,12 @@
 import { afterEach } from 'vitest'
 
 /**
- * 统一清理测试间共享的浏览器状态，避免 `localStorage` 和主题残留影响下一条用例。
+ * 清理测试间共享的浏览器状态。
+ * 这里统一重置 `localStorage` 与根节点主题标记，避免前一条用例影响后一条。
  */
-afterEach(() => {
+function resetBrowserState() {
   window.localStorage.clear()
   delete document.documentElement.dataset.theme
-})
+}
+
+afterEach(resetBrowserState)

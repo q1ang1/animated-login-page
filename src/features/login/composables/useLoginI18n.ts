@@ -1,13 +1,23 @@
+/**
+ * 登录页国际化入口。
+ * 负责维护语言字典、浏览器语言回退逻辑，以及 `localStorage.lang` 持久化策略。
+ */
 import { usePreferredLanguages, useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import type { AppLocale, LoginCopy } from '@/features/login/types'
 
-/** 登录页语言持久化 key，优先级高于浏览器首选语言。 */
+/**
+ * 登录页语言持久化 key。
+ * 只要本地缓存中存在合法语言值，就会覆盖浏览器首选语言。
+ *
+ * @example
+ * window.localStorage.setItem(LANG_STORAGE_KEY, 'zh-CN')
+ */
 export const LANG_STORAGE_KEY = 'lang'
 
 /**
  * 登录页支持的全部中英文文案。
- * 当前先覆盖页面内所有可见文本和常见错误提示。
+ * 新增语言时，需要同步扩展 `AppLocale`、`LoginCopy` 和当前字典对象。
  */
 const LOGIN_COPY: Record<AppLocale, LoginCopy> = {
   en: {
