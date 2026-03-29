@@ -10,7 +10,7 @@ import ThemeToggle from '@/features/login/components/ThemeToggle.vue'
 import { useLoginI18n } from '@/features/login/composables/useLoginI18n'
 import { useMockAuth } from '@/features/login/composables/useMockAuth'
 import { useThemeMode } from '@/features/login/composables/useThemeMode'
-import type { BrandConfig, LoginFieldErrors, LoginFormModel } from '@/features/login/types'
+import type { AppLocale, BrandConfig, LoginFieldErrors, LoginFormModel, ThemeMode } from '@/features/login/types'
 
 /**
  * 登录页外层可传入的品牌配置。
@@ -65,10 +65,10 @@ function validateEmail(value: string) {
 }
 
 /** 登录页当前语言、文案和切换方法。 */
-const { locale, copy, toggleLocale } = useLoginI18n()
+const { locale, copy, setLocale, toggleLocale } = useLoginI18n()
 
 /** 登录页当前主题和切换方法。 */
-const { theme, isDark, toggleTheme } = useThemeMode()
+const { theme, isDark, setTheme } = useThemeMode()
 
 /** 根据品牌名和当前语言生成浏览器标题。 */
 const pageTitle = computed(() => `${props.brand.name} · ${copy.value.pageTitle}`)
@@ -115,6 +115,31 @@ const nextThemeLabel = computed(() =>
 const nextLocaleLabel = computed(() =>
   locale.value === 'zh-CN' ? copy.value.switchToEnglish : copy.value.switchToChinese,
 )
+
+/**
+ * 响应顶部主题开关的显式切换结果。
+ * 主题切换动画已经在 `ThemeToggle` 内部按 Element Plus 官方实现处理，
+ * 这里仅负责把最终主题值写回全局状态。
+ *
+ * @param {ThemeMode} nextTheme 用户最终选择的新主题。
+ * @returns {void}
+ *
+ * @example
+ * handleThemeChange('light')
+ */
+function handleThemeChange(nextTheme: ThemeMode) {
+  setTheme(nextTheme)
+}
+
+/**
+ * 响应顶部语言菜单的显式选择结果。
+ *
+ * @param {AppLocale} nextLocale 用户从下拉菜单选中的语言代码。
+ * @returns {void}
+ */
+function handleLocaleChange(nextLocale: AppLocale) {
+  setLocale(nextLocale)
+}
 
 /**
  * 清空字段级错误，避免前一次校验结果残留到下一次提交。
@@ -270,7 +295,7 @@ async function handleGoogleLogin() {
     </section>
 
     <section class="auth-panel relative flex min-h-screen items-center justify-center px-7 py-10 sm:px-8 md:px-10 lg:min-h-0 lg:p-8">
-      <div class="absolute right-3 top-3 z-20 flex flex-col items-end gap-1.5 sm:right-5 sm:top-5">
+      <div class="absolute right-3 top-3 z-20 flex items-center justify-end gap-1 sm:right-5 sm:top-5 sm:gap-1.5">
         <LanguageToggle
           :locale="locale"
           :language-label="copy.languageLabel"
@@ -278,15 +303,12 @@ async function handleGoogleLogin() {
           :chinese-label="copy.languageChinese"
           :next-locale-label="nextLocaleLabel"
           @toggle="toggleLocale"
+          @select="handleLocaleChange"
         />
-
         <ThemeToggle
           :theme="theme"
-          :theme-label="copy.themeLabel"
-          :dark-label="copy.themeDark"
-          :light-label="copy.themeLight"
           :next-theme-label="nextThemeLabel"
-          @toggle="toggleTheme"
+          @update:theme="handleThemeChange"
         />
       </div>
 

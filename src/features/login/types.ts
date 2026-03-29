@@ -223,6 +223,20 @@ export type AppLocale = 'en' | 'zh-CN'
 export type ThemeMode = 'dark' | 'light'
 
 /**
+ * 主题切换动画的触发原点。
+ * 通常取自主题开关在视口中的中心点，用于计算揭幕动画的圆心。
+ *
+ * @example
+ * const origin: ThemeTransitionOrigin = { x: 1440, y: 36 }
+ */
+export interface ThemeTransitionOrigin {
+  /** 动画圆心在视口中的 X 坐标。 */
+  x: number
+  /** 动画圆心在视口中的 Y 坐标。 */
+  y: number
+}
+
+/**
  * 品牌 logo 在桌面端和移动端共用的样式变量配置。
  * 最终会被转换成 CSS 变量，挂到品牌 logo 组件上。
  *

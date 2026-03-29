@@ -11,12 +11,13 @@ const THEME_STORAGE_KEY = 'animated-login-theme'
  * @returns {{
  *   theme: import('vue').ComputedRef<ThemeMode>,
  *   isDark: import('vue').ComputedRef<boolean>,
+ *   setTheme: (theme: ThemeMode) => void,
  *   toggleTheme: () => void
  * }} 当前主题状态和切换方法。
  *
  * @example
- * const { theme, toggleTheme } = useThemeMode()
- * toggleTheme()
+ * const { theme, setTheme } = useThemeMode()
+ * setTheme('light')
  */
 export function useThemeMode() {
   /**
@@ -32,6 +33,20 @@ export function useThemeMode() {
   const isDark = computed(() => theme.value === 'dark')
 
   /**
+   * 显式设置当前主题。
+   * `ElSwitch` 这类表单控件更适合使用确定值，而不是只暴露反转动作。
+   *
+   * @param {ThemeMode} nextTheme 目标主题，只支持 `dark` 和 `light`。
+   * @returns {void}
+   *
+   * @example
+   * setTheme('dark')
+   */
+  function setTheme(nextTheme: ThemeMode) {
+    storedTheme.value = nextTheme
+  }
+
+  /**
    * 在深浅两套主题间切换。
    *
    * @returns {void}
@@ -40,7 +55,7 @@ export function useThemeMode() {
    * toggleTheme()
    */
   function toggleTheme() {
-    storedTheme.value = isDark.value ? 'light' : 'dark'
+    setTheme(isDark.value ? 'light' : 'dark')
   }
 
   /**
@@ -48,9 +63,10 @@ export function useThemeMode() {
    * 这样全局 CSS 变量可以通过 `[data-theme="dark"]` / `[data-theme="light"]` 生效。
    */
   watch(
-    theme,
+   theme,
     (value) => {
       document.documentElement.dataset.theme = value
+      document.documentElement.classList.toggle('dark', value === 'dark')
     },
     { immediate: true },
   )
@@ -58,6 +74,7 @@ export function useThemeMode() {
   return {
     theme,
     isDark,
+    setTheme,
     toggleTheme,
   }
 }
