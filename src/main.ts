@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import 'element-plus/es/components/dropdown/style/css'
+import 'element-plus/es/components/switch/style/css'
 import 'virtual:uno.css'
 import './styles/index.css'
 
