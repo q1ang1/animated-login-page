@@ -7,6 +7,7 @@ import { afterEach } from 'vitest'
 function resetBrowserState() {
   window.localStorage.clear()
   delete document.documentElement.dataset.theme
+  document.documentElement.classList.remove('dark')
 }
 
 afterEach(resetBrowserState)

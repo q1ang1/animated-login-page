@@ -1,15 +1,17 @@
-import { useStorage } from '@vueuse/core'
-import { computed, watch } from 'vue'
-import type { ThemeMode } from '@/features/login/types'
+import { useColorMode } from '@vueuse/core'
+import { computed } from 'vue'
+import type { ThemeMode, ThemePreference } from '@/features/login/types'
 
-const THEME_STORAGE_KEY = 'animated-login-theme'
+export const THEME_STORAGE_KEY = 'animated-login-theme'
 
 /**
  * 管理登录页的主题模式，并同步到根节点的 `data-theme`。
- * 这里默认使用当前项目已经完成的深色视觉，浅色作为新增补充主题。
+ * 首次进入时默认跟随系统主题；一旦用户手动切换，就持久化显式的深浅色选择。
  *
  * @returns {{
  *   theme: import('vue').ComputedRef<ThemeMode>,
+ *   themePreference: import('vue').ComputedRef<ThemePreference>,
+ *   systemTheme: import('vue').ComputedRef<ThemeMode>,
  *   isDark: import('vue').ComputedRef<boolean>,
  *   setTheme: (theme: ThemeMode) => void,
  *   toggleTheme: () => void
@@ -20,14 +22,31 @@ const THEME_STORAGE_KEY = 'animated-login-theme'
  * setTheme('light')
  */
 export function useThemeMode() {
-  /**
-   * 用户持久化的主题偏好。
-   * 如果用户从未切换过主题，会默认回退到 `dark`。
-   */
-  const storedTheme = useStorage<ThemeMode>(THEME_STORAGE_KEY, 'dark')
+  const hasStoredPreference = window.localStorage.getItem(THEME_STORAGE_KEY) !== null
 
-  /** 当前实际使用的主题值。 */
-  const theme = computed<ThemeMode>(() => storedTheme.value ?? 'dark')
+  const colorMode = useColorMode<ThemeMode>({
+    selector: 'html',
+    attribute: 'data-theme',
+    initialValue: 'auto',
+    storageKey: THEME_STORAGE_KEY,
+    onChanged(mode, defaultHandler) {
+      defaultHandler(mode)
+      document.documentElement.classList.toggle('dark', mode === 'dark')
+    },
+  })
+
+  if (!hasStoredPreference && colorMode.store.value === 'auto') {
+    window.localStorage.removeItem(THEME_STORAGE_KEY)
+  }
+
+  /** 当前页面真正生效的主题。 */
+  const theme = computed<ThemeMode>(() => colorMode.state.value)
+
+  /** 用户当前存储的主题偏好。 */
+  const themePreference = computed<ThemePreference>(() => colorMode.store.value)
+
+  /** 当前系统偏好的主题。 */
+  const systemTheme = computed<ThemeMode>(() => colorMode.system.value)
 
   /** 当前是否处于深色主题。 */
   const isDark = computed(() => theme.value === 'dark')
@@ -43,11 +62,12 @@ export function useThemeMode() {
    * setTheme('dark')
    */
   function setTheme(nextTheme: ThemeMode) {
-    storedTheme.value = nextTheme
+    colorMode.value = nextTheme
   }
 
   /**
-   * 在深浅两套主题间切换。
+   * 在当前实际生效的深浅两套主题间切换。
+   * 如果当前仍处于 `auto` 跟随系统，则会写入与当前实际主题相反的显式模式。
    *
    * @returns {void}
    *
@@ -58,21 +78,10 @@ export function useThemeMode() {
     setTheme(isDark.value ? 'light' : 'dark')
   }
 
-  /**
-   * 监听主题值并同步到根节点属性。
-   * 这样全局 CSS 变量可以通过 `[data-theme="dark"]` / `[data-theme="light"]` 生效。
-   */
-  watch(
-   theme,
-    (value) => {
-      document.documentElement.dataset.theme = value
-      document.documentElement.classList.toggle('dark', value === 'dark')
-    },
-    { immediate: true },
-  )
-
   return {
     theme,
+    themePreference,
+    systemTheme,
     isDark,
     setTheme,
     toggleTheme,

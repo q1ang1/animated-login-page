@@ -215,12 +215,21 @@ export type AppLocale = 'en' | 'zh-CN'
 
 /**
  * 支持的外观主题。
- * `dark` 是当前默认视觉，`light` 是新增的浅色变体。
+ * `dark` 和 `light` 分别对应两套显式主题视觉。
  *
  * @example
  * const theme: ThemeMode = 'dark'
  */
 export type ThemeMode = 'dark' | 'light'
+
+/**
+ * 主题偏好设置。
+ * `auto` 表示当前没有用户手动覆盖，界面会跟随系统主题。
+ *
+ * @example
+ * const preference: ThemePreference = 'auto'
+ */
+export type ThemePreference = ThemeMode | 'auto'
 
 /**
  * 主题切换动画的触发原点。
@@ -343,8 +352,8 @@ export interface BrandConfig {
  *   themeLabel: 'Theme',
  *   themeDark: 'Dark',
  *   themeLight: 'Light',
- *   switchToDarkTheme: 'Switch to light theme',
- *   switchToLightTheme: 'Switch to dark theme',
+ *   switchToDarkTheme: 'Switch to dark theme',
+ *   switchToLightTheme: 'Switch to light theme',
  *   emailLabel: 'Email',
  *   emailPlaceholder: 'you@example.com',
  *   passwordLabel: 'Password',
