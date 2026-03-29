@@ -185,10 +185,17 @@ const localeCode = computed(() => (props.locale === 'zh-CN' ? '中文' : 'EN'))
 }
 
 :global(.locale-dropdown-menu.el-popper) {
+  /* 把 Element Plus 的 dropdown token 桥接到当前登录页主题，确保 teleport 出去的 popper 也跟随深浅色切换。 */
+  --locale-dropdown-surface: color-mix(in srgb, var(--background) 92%, transparent);
+  --locale-dropdown-surface-hover: color-mix(in srgb, var(--foreground) 8%, transparent);
+  --el-bg-color-overlay: var(--locale-dropdown-surface);
+  --el-border-color-light: var(--theme-toggle-border);
+  --el-box-shadow-light: var(--theme-toggle-shadow);
+  --el-text-color-regular: var(--muted-foreground);
+  --el-text-color-primary: var(--foreground);
+  --el-fill-color-light: var(--locale-dropdown-surface-hover);
+  --el-color-primary: var(--foreground);
   border-radius: 1.125rem;
-  border: 1px solid var(--theme-toggle-border);
-  background: color-mix(in srgb, var(--background) 92%, transparent);
-  box-shadow: var(--theme-toggle-shadow);
   padding: 0.375rem;
   backdrop-filter: blur(16px);
 }
@@ -197,6 +204,16 @@ const localeCode = computed(() => (props.locale === 'zh-CN' ? '中文' : 'EN'))
   min-width: 8.25rem;
   border-radius: 0.875rem;
   padding: 0.625rem 0.75rem;
+  color: var(--el-text-color-regular);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+:global(.locale-dropdown-menu .el-dropdown-menu__item:not(.is-disabled):hover),
+:global(.locale-dropdown-menu .el-dropdown-menu__item:not(.is-disabled):focus) {
+  background: var(--el-fill-color-light);
+  color: var(--el-text-color-primary);
 }
 
 :global(.locale-dropdown-menu .locale-dropdown-option) {
